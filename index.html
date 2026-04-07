@@ -635,27 +635,37 @@
       transform: none;
     }
 
-    /* ── CURSOR ── */
-    .cursor {
-      width: 10px; height: 10px;
-      background: var(--accent);
-      border-radius: 50%;
-      position: fixed;
-      pointer-events: none;
-      z-index: 9999;
-      transition: transform 0.15s ease, opacity 0.15s;
-      mix-blend-mode: difference;
-    }
+   body {
+  cursor: none;
+}
 
-    .cursor-ring {
-      width: 36px; height: 36px;
-      border: 1px solid rgba(125,249,232,0.4);
-      border-radius: 50%;
-      position: fixed;
-      pointer-events: none;
-      z-index: 9998;
-      transition: transform 0.4s ease, width 0.3s, height 0.3s;
-    }
+.cursor-astronaut {
+  position: fixed;
+  pointer-events: none;
+  z-index: 9999;
+  font-size: 32px;
+  transition: transform 0.05s linear;
+}
+
+.cursor-rocket {
+  position: fixed;
+  pointer-events: none;
+  z-index: 9998;
+  font-size: 28px;
+  transition: transform 0.5s ease-out;
+}
+
+/* Mobile fallback */
+@media (max-width: 768px) {
+  .cursor-astronaut,
+  .cursor-rocket {
+    display: none;
+  }
+
+  body {
+    cursor: auto;
+  }
+}
 
     /* ── MOBILE ── */
     @media (max-width: 768px) {
@@ -686,8 +696,8 @@
 <body>
 
   <canvas id="bg-canvas"></canvas>
-  <div class="cursor" id="cursor"></div>
-  <div class="cursor-ring" id="cursor-ring"></div>
+<div class="cursor-astronaut">👽</div>
+<div class="cursor-rocket">🛸</div>
 
   <!-- NAV -->
   <nav>
@@ -1087,36 +1097,27 @@
   }
   animate();
 
-  // ─── CUSTOM CURSOR ─────────────────────────────────────────────────
-  const cursor = document.getElementById('cursor');
-  const cursorRing = document.getElementById('cursor-ring');
-  let cx = 0, cy = 0, rx = 0, ry = 0;
+// ─── ASTRONAUT CURSOR ──────────────────────────────────────────────
+document.addEventListener("DOMContentLoaded", () => {
+  const astronaut = document.querySelector('.cursor-astronaut');
+  const rocket = document.querySelector('.cursor-rocket');
 
   document.addEventListener('mousemove', (e) => {
-    cx = e.clientX; cy = e.clientY;
-    cursor.style.left = cx - 5 + 'px';
-    cursor.style.top = cy - 5 + 'px';
+    astronaut.style.transform = `translate(${e.clientX - 16}px, ${e.clientY - 16}px)`;
+    rocket.style.transform = `translate(${e.clientX - 14}px, ${e.clientY - 14}px)`;
   });
 
-  function animateCursor() {
-    rx += (cx - rx) * 0.12;
-    ry += (cy - ry) * 0.12;
-    cursorRing.style.left = rx - 18 + 'px';
-    cursorRing.style.top = ry - 18 + 'px';
-    requestAnimationFrame(animateCursor);
-  }
-  animateCursor();
-
+  // Hover effect
   document.querySelectorAll('a, button, .project-card, .skill-category').forEach(el => {
     el.addEventListener('mouseenter', () => {
-      cursorRing.style.width = '60px';
-      cursorRing.style.height = '60px';
+      astronaut.style.transform += ' scale(1.3)';
     });
+
     el.addEventListener('mouseleave', () => {
-      cursorRing.style.width = '36px';
-      cursorRing.style.height = '36px';
+      astronaut.style.transform = astronaut.style.transform.replace(' scale(1.3)', '');
     });
   });
+});
 
   // ─── SCROLL REVEAL ─────────────────────────────────────────────────
   const revealElements = document.querySelectorAll('.reveal');
